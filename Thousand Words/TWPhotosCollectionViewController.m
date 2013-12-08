@@ -11,6 +11,7 @@
 #import "Photo.h"
 #import "TWPictureDataTransformer.h"
 #import "TWCoreDataHelper.h"
+#import "TWPhotoDetailViewController.h"
 
 @interface TWPhotosCollectionViewController () <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 @property (strong, nonatomic) NSMutableArray *photos; // of UIImages
@@ -40,17 +41,47 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    /* Call to the super classes implementation of viewWillAppear */
+    
+    /* Now that the photos are arranged we reload our CollectionView. */
+    
+}
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    
+    /* The Photos are stored in Core Data as an NSSet. */
     NSSet *unorderedPhotos = self.album.photos;
+    /* To organize them we use a NSSort descriptor to arrange the photos by date. */
     NSSortDescriptor *dateDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES];
     NSArray *sortedPhotos = [unorderedPhotos sortedArrayUsingDescriptors:@[dateDescriptor]];
     self.photos = [sortedPhotos mutableCopy];
+    [self.collectionView reloadData];
 }
+
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"Detail Segue"]) {
+        if ([segue.destinationViewController isKindOfClass:[TWPhotoDetailViewController class]]) {
+            TWPhotoDetailViewController *targetViewController = segue.destinationViewController;
+            NSIndexPath *indexPath = [[self.collectionView indexPathsForSelectedItems] lastObject];
+            
+            Photo *selectedPhoto = self.photos[indexPath.row];
+            targetViewController.photo = selectedPhoto;
+        }
+    }
+    
+    
+}
+
 
 - (IBAction)cameraBarButtonItemPressed:(UIBarButtonItem *)sender {
     

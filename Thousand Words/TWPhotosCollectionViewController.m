@@ -13,7 +13,7 @@
 #import "TWCoreDataHelper.h"
 #import "TWPhotoDetailViewController.h"
 
-@interface TWPhotosCollectionViewController () <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@interface TWPhotosCollectionViewController () <UIImagePickerControllerDelegate,UINavigationControllerDelegate, UIAlertViewDelegate>
 @property (strong, nonatomic) NSMutableArray *photos; // of UIImages
 
 @end
@@ -85,19 +85,43 @@
 
 - (IBAction)cameraBarButtonItemPressed:(UIBarButtonItem *)sender {
     
-    UIImagePickerController *picker = [[UIImagePickerController alloc]init];
+    
+    UIAlertView *imagePickerAlertView = [[UIAlertView alloc] initWithTitle:@"Photo Source" message:@"Import from photo album, new photo?" delegate:self cancelButtonTitle:@"I'm done" otherButtonTitles:@"Photos", @"Camera", nil];
+    [imagePickerAlertView show];
+    
+    //    UIImagePickerController *picker = [[UIImagePickerController alloc]init];
+    //    picker.delegate = self;
+    //
+    //    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
+    //        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    //    }
+    //    else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum]){
+    //        picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+    //    }
+    //    [self presentViewController:picker animated:YES completion:nil];
+    //
+    
+}
+
+#pragma mark - UIAlertView delegate
+
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
     
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] && buttonIndex == 2)
+    {
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    }
-    else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum]){
+    } else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum] && buttonIndex == 1)
+    {
         picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
     }
     [self presentViewController:picker animated:YES completion:nil];
     
-    
 }
+
+
 
 
 #pragma mark - Helper Methods
@@ -112,9 +136,9 @@
     NSError *error = nil;
     if (![[photo managedObjectContext] save:&error]) {
         NSLog (@"%@", error);
-         }
-        return photo;
     }
+    return photo;
+}
 
 
 #pragma mark - UICollectionViewDataSource
@@ -129,7 +153,7 @@
     Photo *photo = self.photos[indexPath.row];
     
     cell.backgroundColor = [UIColor whiteColor];
-        
+    
     cell.imageView.image = photo.image;
     
     return cell;

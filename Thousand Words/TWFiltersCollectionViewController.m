@@ -146,6 +146,8 @@
 {
     TWPhotoCollectionViewCell *selectedCell = (TWPhotoCollectionViewCell *) [collectionView cellForItemAtIndexPath:indexPath];
     
+    
+    if (selectedCell.imageView.image) {
     self.photo.image = selectedCell.imageView.image;
     
     NSError *error = nil;
@@ -154,8 +156,10 @@
         // Handle Error
         NSLog (@"%@",error);
         
+    
     }
     [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 @end

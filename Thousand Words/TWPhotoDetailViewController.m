@@ -29,11 +29,18 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    
+    self.imageView.contentMode = UIViewContentModeCenter;
+    if (self.imageView.bounds.size.width > self.imageView.image.size.width && self.imageView.bounds.size.height > self.imageView.image.size.height) {
+        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    }
+    
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
+    
     
     self.imageView.image = self.photo.image;
     
